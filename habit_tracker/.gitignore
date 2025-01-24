@@ -1,0 +1,44 @@
+# Django
+*.sqlite3
+*.pyc
+__pycache__/
+media/
+staticfiles/
+env/
+.env
+.venv/
+venv/
+.vscode/
+.idea/
+db.sqlite3
+
+# Python
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+ENV/
+env/
+.venv/
+
+# IDE
+.vscode/
+.idea/

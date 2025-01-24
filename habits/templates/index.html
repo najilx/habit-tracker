@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Habit Tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'index' %}">Habit Tracker</a>
+            <div class="navbar-nav">
+                <a class="nav-link" href="{% url 'index' %}">Home</a>
+                <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h1>Welcome, {{ request.user.username }}!</h1>
+        <h2>Your Habits</h2>
+        <p>Current Streak: {{ request.user.profile.streak|default:0 }} days</p>
+        <p>Badges:
+            {% for badge in request.user.profile.badges.all %}
+                <span class="badge bg-success">{{ badge.name }}</span>
+            {% endfor %}
+        </p>
+        <a href="{% url 'add_habit' %}" class="btn btn-primary mb-3">Add New Habit</a>
+        <div class="list-group">
+            {% for habit in habits %}
+                <div class="list-group-item">
+                    <h5>{{ habit.name }}</h5>
+                    <p>Goal: {{ habit.goal }} per day</p>
+                    <p>Completed Today: 
+                        {% if habit.progress.exists %}
+                            {% with progress=habit.progress.first %}
+                                {{ progress.count }} / {{ habit.goal }}
+                                {% if progress.completed %}
+                                    <span class="badge bg-success">Done</span>
+                                {% else %}
+                                    <span class="badge bg-warning">In Progress</span>
+                                {% endif %}
+                            {% endwith %}
+                        {% else %}
+                            <span class="badge bg-secondary">Not Started</span>
+                        {% endif %}
+                    </p>
+                    <a href="{% url 'mark_progress' habit.id %}" class="btn btn-success btn-sm">Mark Progress</a>
+                    <a href="{% url 'edit_habit' habit.id %}" class="btn btn-warning btn-sm">Edit</a>
+                    <a href="{% url 'delete_habit' habit.id %}" class="btn btn-danger btn-sm">Delete</a>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Leaderboard Section -->
+        <h2 class="mt-4">Leaderboard</h2>
+        <table class="table" id="leaderboard">
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Username</th>
+                    <th>Streak</th>
+                    <th>Level</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Leaderboard data will be populated here -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- JavaScript to fetch and display leaderboard data -->
+    <script>
+        fetch('/habits/leaderboard/')
+            .then(response => response.json())
+            .then(data => {
+                const leaderboard = document.getElementById('leaderboard').getElementsByTagName('tbody')[0];
+                data.forEach((user, index) => {
+                    const row = leaderboard.insertRow();
+                    row.insertCell().textContent = index + 1;  // Rank
+                    row.insertCell().textContent = user.username;  // Username
+                    row.insertCell().textContent = user.streak;  // Streak
+                    row.insertCell().textContent = user.level;  // Level
+                });
+            });
+    </script>
+</body>
+</html>
